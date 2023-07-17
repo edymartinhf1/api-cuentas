@@ -199,21 +199,16 @@ public class CuentaServiceImpl implements CuentaServiceI{
     Function<String, CuentasTipoTypes> setTipoCuenta = tipoCuenta  -> {
         CuentasTipoTypes cuentasType= null;
         switch (tipoCuenta) {
-            case "AHO" -> {
-                cuentasType= CuentasTipoTypes.AHORRO;
-            }
-            case "CTE" -> {
-                cuentasType= CuentasTipoTypes.CORRIENTE;
-            }
-            case "PZF" -> {
-                cuentasType= CuentasTipoTypes.PLAZOFIJO;
-            }
-            case "VIP" -> {
-                cuentasType= CuentasTipoTypes.PERSONALVIP;
-            }
-            case "PYM" -> {
-                cuentasType= CuentasTipoTypes.PYME;
-            }
+            case "AHO" -> cuentasType= CuentasTipoTypes.AHORRO;
+
+            case "CTE" -> cuentasType= CuentasTipoTypes.CORRIENTE;
+
+            case "PZF" -> cuentasType= CuentasTipoTypes.PLAZOFIJO;
+
+            case "VIP" -> cuentasType= CuentasTipoTypes.PERSONALVIP;
+
+            case "PYM" -> cuentasType= CuentasTipoTypes.PYME;
+
             default -> {
             }
         }
