@@ -6,9 +6,11 @@ import com.bootcamp.bank.cuentas.exception.BusinessException;
 import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 @Component
+@Log4j2
 public class CuentaPersonalVIPStrategy implements CuentasStrategy{
 
     /**
@@ -35,12 +37,13 @@ public class CuentaPersonalVIPStrategy implements CuentasStrategy{
             return Mono.just(Boolean.FALSE);
         }
         return clientApiCreditos.getCreditosPorIdClinteAndTipoCredito(idCliente,tipoCreditoPreCondicion)
+                .switchIfEmpty(Mono.error(()->new BusinessException(" cuentaVip error : no existe un producto de tarjeta de credito con el cliente id "+idCliente)))
                 .collectList()
-                .map(list ->
-                        list.isEmpty() ? Mono.just(new BusinessException("El cliente : "+idCliente+" no tiene producto de tarjeta de credito de tipo :"+tipoCreditoPreCondicion)):Mono.just(list)
-                )
-                //.switchIfEmpty(Mono.error(()->new BusinessException("No existe cliente con credito con el id "+idCliente)))
-                .then(Mono.just(Boolean.TRUE));
+                .flatMap(list -> {
+                    log.info(" cuenta personal vip - numero de productos de tarjeta de credito "+list.size());
+                    return list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                });
+
 
 
     }

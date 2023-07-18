@@ -37,8 +37,7 @@ public class CuentaPymeStrategy implements CuentasStrategy{
         }
 
         return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuentaPreCondicion)
-                //.switchIfEmpty(Mono.error(()->new BusinessException("CuentaPyme error : no existe cuenta corriente con el cliente id "+idCliente)))
-                //.next()
+                .switchIfEmpty(Mono.error(()->new BusinessException(" cuentaPyme error : no existe cuenta corriente con el cliente id "+idCliente)))
                 .collectList()
                 .map(list ->
                         list.isEmpty() ? Mono.just(new BusinessException("CuentaPyme error : El cliente : "+idCliente+" no tiene cuenta  de tipo :"+tipoCuentaPreCondicion)):Mono.just(list)

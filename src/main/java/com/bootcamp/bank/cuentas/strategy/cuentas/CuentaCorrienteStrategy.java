@@ -33,11 +33,14 @@ public class CuentaCorrienteStrategy implements CuentasStrategy{
                                       CuentaDao cuentaDao,
                                       PerfilInfo perfilInfo
     ) {
+
+        String idCliente  = cuentaDao.getIdCliente();
+        String tipoCuenta = cuentaDao.getTipoCuenta();
+
         if (!perfilInfo.getPerfiles().contains(cuentaDao.getTipoCuenta().trim())){
             return Mono.just(Boolean.FALSE);
         }
-        String idCliente  = cuentaDao.getIdCliente();
-        String tipoCuenta = cuentaDao.getTipoCuenta();
+
         return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuenta)
                 .collectList()
                 .flatMap(list -> {

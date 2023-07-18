@@ -18,6 +18,7 @@ public class CuentaDao {
     private Boolean flgLimiteMovMensual;
     private Integer numMaximoMovimientos;
     private Double  montoMinimoApertura;
+    private Double  montoMinimoMensual;
     private Integer numeroMaximoTransaccionesLibres;
 
 

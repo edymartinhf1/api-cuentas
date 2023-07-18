@@ -11,7 +11,7 @@ public class CuentaPersonalVIP extends CuentaA {
         this.setNumeroCuenta("VIP"+Integer.toString(randomNumber));
         this.setFechaCreacion (Util.getCurrentDateAsString("dd/MM/yyyy"));
         this.setEstado("ACT");
-        this.setMontoMinimoApertura(0.00);
+        this.setMontoMinimoMensual(500.00);
         this.setNumeroMaximoTransaccionesLibres(20);
     }
 }

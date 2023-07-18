@@ -16,6 +16,7 @@ public abstract class CuentaA {
     private Boolean flgLimiteMovMensual;
     private Integer numMaximoMovimientos;
     private Double  montoMinimoApertura;
+    private Double  montoMinimoMensual;
     private Integer numeroMaximoTransaccionesLibres;
 
     protected CuentaA() {
