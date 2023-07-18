@@ -12,6 +12,7 @@ public class PerfilPersonalSstrategy implements PerfilClienteStrategy {
         if (cliente.getTipoCli().equals("PER")){
             List<String> tiposCuentasPermitidas = List.of("AHO","CTE","PZF","VIP");
             perfil.setPerfiles(tiposCuentasPermitidas);
+            perfil.setCliente(cliente);
         }
         return perfil;
     }

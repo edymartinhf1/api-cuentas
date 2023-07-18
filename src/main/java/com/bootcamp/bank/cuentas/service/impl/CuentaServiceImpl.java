@@ -87,6 +87,7 @@ public class CuentaServiceImpl implements CuentaServiceI{
                     PerfilClienteTypes perfilClienteTypes= setPerfilCliente.apply(cli.getTipoCli());
                     PerfilClienteStrategy strategyPerfil = perfilClienteStrategyFactory.getStrategy(perfilClienteTypes);
                     PerfilInfo perfilInfo = strategyPerfil.configurarPerfil(cli);
+                    log.info("cliente= "+cli.toString()+" tipo de cliente "+cli.getTipoCli()+" cuentas permitidas "+perfilInfo.getPerfiles().toString() );
 
                     // Segun el tipo de cuenta se parametriza el bean
                     CuentaA cuentaA = factoryCuentas.getCuentaBancaria(cuentaDao.getTipoCuenta());

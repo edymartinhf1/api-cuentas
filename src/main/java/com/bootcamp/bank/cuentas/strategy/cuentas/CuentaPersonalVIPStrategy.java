@@ -34,6 +34,7 @@ public class CuentaPersonalVIPStrategy implements CuentasStrategy{
         String tipoCreditoPreCondicion = "TJC";
 
         if (!perfilInfo.getPerfiles().contains(cuentaDao.getTipoCuenta().trim())){
+            log.info("No es un tipo de cuenta permitido "+cuentaDao.getTipoCuenta()+" para el tipo de cliente "+cuentaDao.getIdCliente());
             return Mono.just(Boolean.FALSE);
         }
         return clientApiCreditos.getCreditosPorIdClinteAndTipoCredito(idCliente,tipoCreditoPreCondicion)

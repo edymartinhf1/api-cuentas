@@ -13,6 +13,7 @@ public class PerfilEmpresarialStrategy implements PerfilClienteStrategy {
         if (cliente.getTipoCli().equals("EMP")){
             List<String> tiposCuentasPermitidas = List.of("CTE","PYM");
             perfil.setPerfiles(tiposCuentasPermitidas);
+            perfil.setCliente(cliente);
         }
         return perfil;
     }

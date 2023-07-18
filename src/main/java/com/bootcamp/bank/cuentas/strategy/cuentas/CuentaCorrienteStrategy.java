@@ -38,15 +38,19 @@ public class CuentaCorrienteStrategy implements CuentasStrategy{
         String tipoCuenta = cuentaDao.getTipoCuenta();
 
         if (!perfilInfo.getPerfiles().contains(cuentaDao.getTipoCuenta().trim())){
+            log.info("No es un tipo de cuenta permitido "+cuentaDao.getTipoCuenta()+" para el tipo de cliente "+cuentaDao.getIdCliente());
             return Mono.just(Boolean.FALSE);
         }
 
         return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuenta)
                 .collectList()
                 .flatMap(list -> {
-                    log.info(" cuentas de tipo "+tipoCuenta +" obtenidos ="+list.size());
                     log.info(" el cliente : " + idCliente + " ya tiene cuentas de tipo :" + tipoCuenta +" registros "+list.size());
-                    return !list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                    if (perfilInfo.getCliente().getTipoCli().equals("EMP")){
+                        return Mono.just(Boolean.TRUE);
+                    } else {
+                        return !list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                    }
                 });
 
 

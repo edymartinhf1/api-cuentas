@@ -6,9 +6,11 @@ import com.bootcamp.bank.cuentas.exception.BusinessException;
 import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 @Component
+@Log4j2
 public class CuentaPymeStrategy implements CuentasStrategy{
 
     /**
@@ -33,6 +35,7 @@ public class CuentaPymeStrategy implements CuentasStrategy{
         String tipoCreditoPreCondicion = "TJC"; // tarjeta credito
 
         if (!perfilInfo.getPerfiles().contains(cuentaDao.getTipoCuenta().trim())){
+            log.info("No es un tipo de cuenta permitido "+cuentaDao.getTipoCuenta()+" para el tipo de cliente "+cuentaDao.getIdCliente());
             return Mono.just(Boolean.FALSE);
         }
 
