@@ -77,24 +77,24 @@ public class CuentasController {
 
     /**
      * Permite actualizar cuenta
-     * @param cuenta
+     * @param numeroCuenta
      * @return
      */
-    @PutMapping
-    public Mono<Cuenta> updateAccount(@RequestBody CuentaPost cuenta) {
-        return cuentasService.update(this.fromCuentaPostToCuentaDao(cuenta))
+    @PutMapping("/{numeroCuenta}")
+    public Mono<Cuenta> updateAccount(@RequestBody CuentaPost cuenta, @PathVariable String numeroCuenta) {
+        return cuentasService.update(this.fromCuentaPostToCuentaDao(cuenta),numeroCuenta)
                 .map(this::fromCuentaDaoToCuentaDto);
     }
 
 
     /**
      * Permite borrar una cuenta
-     * @param id
+     * @param numeroCuenta
      * @return
      */
-    @DeleteMapping
-    public Mono<Void> deleteAccount(@PathVariable String id) {
-        return cuentasService.delete(id);
+    @DeleteMapping("/{numeroCuenta}")
+    public Mono<Void> deleteAccount(@PathVariable String numeroCuenta) {
+        return cuentasService.delete(numeroCuenta);
 
     }
 

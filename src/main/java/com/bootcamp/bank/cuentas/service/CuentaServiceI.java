@@ -12,6 +12,6 @@ public interface CuentaServiceI {
     Mono<CuentaDao> findByNumeroCuenta(String numeroCuenta);
     Flux<CuentaDao> findByIdCliente(String idCliente);
     Flux<CuentaDao> findByIdClienteAndTipoCuenta(String idCliente,String tipoCuenta);
-    Mono<CuentaDao> update( CuentaDao cuentaDao);
+    Mono<CuentaDao> update( CuentaDao cuentaDao,String numeroCuenta);
     Mono<Void> delete( String id);
 }

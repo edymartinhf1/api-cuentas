@@ -179,21 +179,25 @@ public class CuentaServiceImpl implements CuentaServiceI{
     }
 
     /**
-     * Permite actualizar la cuenta
+     * Permite actualizar una cuenta
      * @param cuentaDao
      * @return
      */
-    public Mono<CuentaDao> update( CuentaDao cuentaDao) {
-        return cuentaRepository.save(cuentaDao);
+    public Mono<CuentaDao> update( CuentaDao cuentaDao,String numeroCuenta ) {
+        return findByNumeroCuenta(numeroCuenta)
+            .switchIfEmpty(Mono.error(()->new BusinessException("No existe cuenta con el numero = "+numeroCuenta)))
+                .flatMap(c->cuentaRepository.save(cuentaDao));
     }
 
     /**
      * Permite eliminar una cuenta
-     * @param id
+     * @param numeroCuenta
      * @return
      */
-    public Mono<Void> delete( String id) {
-        return cuentaRepository.deleteById(id);
+    public Mono<Void> delete( String numeroCuenta) {
+        return findByNumeroCuenta(numeroCuenta)
+                .switchIfEmpty(Mono.error(()->new BusinessException("No existe cuenta con el numero = "+numeroCuenta)))
+                .flatMap( cuenta->cuentaRepository.deleteById(cuenta.getId()));
     }
 
     Function<String, CuentasTipoTypes> setTipoCuenta = tipoCuenta  -> {
