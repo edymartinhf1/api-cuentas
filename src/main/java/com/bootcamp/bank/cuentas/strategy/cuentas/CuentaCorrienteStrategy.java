@@ -2,16 +2,17 @@ package com.bootcamp.bank.cuentas.strategy.cuentas;
 
 import com.bootcamp.bank.cuentas.clients.ClientApiClientes;
 import com.bootcamp.bank.cuentas.clients.ClientApiCreditos;
-import com.bootcamp.bank.cuentas.exception.BusinessException;
 import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
 import com.bootcamp.bank.cuentas.service.CuentaServiceI;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Component
+@Log4j2
 public class CuentaCorrienteStrategy implements CuentasStrategy{
 
     @Autowired
@@ -39,9 +40,12 @@ public class CuentaCorrienteStrategy implements CuentasStrategy{
         String tipoCuenta = cuentaDao.getTipoCuenta();
         return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuenta)
                 .collectList()
-                .map(list ->
-                        !list.isEmpty() ? Mono.just(new BusinessException("El cliente : "+idCliente+" ya tiene una cuenta de tipo :"+tipoCuenta)):Mono.just(list)
-                )
-                .then(Mono.just(Boolean.TRUE));
+                .flatMap(list -> {
+                    log.info(" cuentas de tipo "+tipoCuenta +" obtenidos ="+list.size());
+                    log.info(" el cliente : " + idCliente + " ya tiene cuentas de tipo :" + tipoCuenta +" registros "+list.size());
+                    return !list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                });
+
+
     }
 }
