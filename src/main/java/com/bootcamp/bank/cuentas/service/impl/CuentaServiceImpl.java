@@ -209,8 +209,8 @@ public class CuentaServiceImpl implements CuentaServiceI{
 
             case "PYM" -> cuentasType= CuentasTipoTypes.PYME;
 
-            default -> {
-            }
+            default -> cuentasType =CuentasTipoTypes.INVALIDO;
+
         }
         return cuentasType;
     };

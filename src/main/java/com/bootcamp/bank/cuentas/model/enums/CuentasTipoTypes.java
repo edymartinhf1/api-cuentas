@@ -5,5 +5,7 @@ public enum CuentasTipoTypes {
     CORRIENTE,
     PLAZOFIJO,
     PERSONALVIP,
-    PYME
+    PYME,
+
+    INVALIDO
 }

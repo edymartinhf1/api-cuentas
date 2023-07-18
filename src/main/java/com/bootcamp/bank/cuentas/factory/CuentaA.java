@@ -18,7 +18,7 @@ public abstract class CuentaA {
     private Double  montoMinimoApertura;
     private Integer numeroMaximoTransaccionesLibres;
 
-    public CuentaA() {
+    protected CuentaA() {
         this.configurarCuenta();
     }
 
