@@ -1,8 +1,9 @@
-package com.bootcamp.bank.cuentas.strategy;
+package com.bootcamp.bank.cuentas.strategy.cuentas;
 
 import com.bootcamp.bank.cuentas.clients.ClientApiClientes;
 import com.bootcamp.bank.cuentas.clients.ClientApiCreditos;
 import com.bootcamp.bank.cuentas.exception.BusinessException;
+import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
 import org.springframework.stereotype.Component;
@@ -23,11 +24,18 @@ public class CuentaPymeStrategy implements CuentasStrategy{
     public Mono<Boolean> verifyCuenta(CuentaRepository cuentaRepository,
                                       ClientApiClientes clientApiClientes,
                                       ClientApiCreditos clientApiCreditos,
-                                      CuentaDao cuentaDao) {
+                                      CuentaDao cuentaDao,
+                                      PerfilInfo perfilInfo
+    ) {
 
         String idCliente = cuentaDao.getIdCliente();
         String tipoCuentaPreCondicion  = "CTE"; // cuenta corriente
         String tipoCreditoPreCondicion = "TJC"; // tarjeta credito
+
+        if (!perfilInfo.getPerfiles().contains(cuentaDao.getTipoCuenta().trim())){
+            return Mono.just(Boolean.FALSE);
+        }
+
         return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuentaPreCondicion)
                 //.switchIfEmpty(Mono.error(()->new BusinessException("CuentaPyme error : no existe cuenta corriente con el cliente id "+idCliente)))
                 //.next()

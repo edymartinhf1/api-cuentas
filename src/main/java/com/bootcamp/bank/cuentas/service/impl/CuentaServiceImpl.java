@@ -5,12 +5,16 @@ import com.bootcamp.bank.cuentas.clients.ClientApiCreditos;
 import com.bootcamp.bank.cuentas.exception.BusinessException;
 import com.bootcamp.bank.cuentas.factory.CuentaA;
 import com.bootcamp.bank.cuentas.factory.FactoryCuentas;
+import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
 import com.bootcamp.bank.cuentas.model.enums.CuentasTipoTypes;
+import com.bootcamp.bank.cuentas.model.enums.PerfilClienteTypes;
 import com.bootcamp.bank.cuentas.service.CuentaServiceI;
-import com.bootcamp.bank.cuentas.strategy.CuentasStrategy;
-import com.bootcamp.bank.cuentas.strategy.CuentasStrategyFactory;
+import com.bootcamp.bank.cuentas.strategy.cliente.PerfilClienteStrategy;
+import com.bootcamp.bank.cuentas.strategy.cliente.PerfilClienteStrategyFactory;
+import com.bootcamp.bank.cuentas.strategy.cuentas.CuentasStrategy;
+import com.bootcamp.bank.cuentas.strategy.cuentas.CuentasStrategyFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +25,9 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
+/**
+ * Clase Service Cuentas
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,6 +42,8 @@ public class CuentaServiceImpl implements CuentaServiceI{
     private final CuentasStrategyFactory cuentasStrategyFactory;
 
     private final FactoryCuentas factoryCuentas;
+
+    private final PerfilClienteStrategyFactory perfilClienteStrategyFactory;
 
     @Value("${tipo.cliente.personal}")
     private String tipoClientePersonal;
@@ -64,48 +73,6 @@ public class CuentaServiceImpl implements CuentaServiceI{
      * @param cuentaDao
      * @return
      */
-    public Mono<CuentaDao> save2(CuentaDao cuentaDao) {
-
-        return clientApiClientes.getClientes(cuentaDao.getIdCliente())
-                .switchIfEmpty(Mono.error(()->new BusinessException("No existe cliente con el id "+cuentaDao.getIdCliente())))
-                .flatMap(c -> {
-
-
-                    log.info("cliente = "+c.toString());
-                    if (c.getTipoCli().equals(tipoClientePersonal)) {
-                        log.info("cuenta  personal");
-                        FactoryCuentas factory=new FactoryCuentas();
-                        CuentaA cuentaA = factory.getCuentaBancaria(cuentaDao.getTipoCuenta());
-                        cuentaA.setIdCliente(cuentaDao.getIdCliente());
-                        BeanUtils.copyProperties(cuentaA,cuentaDao);
-
-                        return cuentaRepository
-                                .findByIdCliente(cuentaDao.getIdCliente())
-                                .next()
-                                .switchIfEmpty(cuentaRepository.save(cuentaDao));
-
-                    } else {
-                        log.info("cuenta  empresarial");
-                        // cuenta empresarial admite solo CTE
-                        if (cuentaDao.getTipoCuenta().equals("CTE")) {
-
-                            FactoryCuentas factory=new FactoryCuentas();
-                            factory.getCuentaBancaria(cuentaDao.getTipoCuenta());
-                            CuentaA cuentaA = factory.getCuentaBancaria(cuentaDao.getTipoCuenta());
-                            cuentaA.setIdCliente(cuentaDao.getIdCliente());
-                            BeanUtils.copyProperties(cuentaA,cuentaDao);
-
-                            return cuentaRepository
-                                    .save(cuentaDao);
-
-                        } else {
-                            // AHO / PZF no aplican a clientes EMP
-                            return Mono.just(new CuentaDao());
-                        }
-                    }
-                });
-
-    }
 
     public Mono<CuentaDao> save(CuentaDao cuentaDao) {
 
@@ -116,6 +83,11 @@ public class CuentaServiceImpl implements CuentaServiceI{
         return clientApiClientes.getClientes(cuentaDao.getIdCliente())
                 .switchIfEmpty(Mono.error(()->new BusinessException("No existe cliente con el id "+cuentaDao.getIdCliente())))
                 .flatMap(cli->{
+                    // Tipos de cuenta por tipo de cliente
+                    PerfilClienteTypes perfilClienteTypes= setPerfilCliente.apply(cli.getTipoCli());
+                    PerfilClienteStrategy strategyPerfil = perfilClienteStrategyFactory.getStrategy(perfilClienteTypes);
+                    PerfilInfo perfilInfo = strategyPerfil.configurarPerfil(cli);
+
                     // Segun el tipo de cuenta se parametriza el bean
                     CuentaA cuentaA = factoryCuentas.getCuentaBancaria(cuentaDao.getTipoCuenta());
                     cuentaA.setIdCliente(cuentaDao.getIdCliente());
@@ -124,7 +96,7 @@ public class CuentaServiceImpl implements CuentaServiceI{
                     // Segun el tipo  de cuenta se aplican reglas de negocio
                     CuentasTipoTypes cuentasType= setTipoCuenta.apply(cuentaDao.getTipoCuenta());
                     CuentasStrategy strategy= cuentasStrategyFactory.getStrategy(cuentasType);
-                    return strategy.verifyCuenta(cuentaRepository,clientApiClientes,clientApiCreditos,cuentaDao)
+                    return strategy.verifyCuenta(cuentaRepository,clientApiClientes,clientApiCreditos,cuentaDao,perfilInfo)
                             .flatMap(valido ->{
                                 if (valido){
                                     return cuentaRepository
@@ -217,6 +189,19 @@ public class CuentaServiceImpl implements CuentaServiceI{
 
         }
         return cuentasType;
+    };
+
+    Function<String, PerfilClienteTypes> setPerfilCliente = perfilCliente  -> {
+        PerfilClienteTypes perfilClienteTypes= null;
+        switch (perfilCliente) {
+            case "EMP" -> perfilClienteTypes= PerfilClienteTypes.EMPRESARIAL;
+
+            case "PER" -> perfilClienteTypes= PerfilClienteTypes.PERSONAL;
+
+            default -> perfilClienteTypes = PerfilClienteTypes.INVALIDO;
+
+        }
+        return perfilClienteTypes;
     };
 
 

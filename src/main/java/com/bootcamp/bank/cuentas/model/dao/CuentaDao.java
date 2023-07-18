@@ -13,12 +13,13 @@ public class CuentaDao {
     private String  numeroCuenta;
     private String  fechaCreacion;
     private String  estado;
-    private String  tipoCuenta; // AHO: ahorro  , CTE : cuenta corriente , PZF: plazo fijo , VIP :VIP , PYM : PYM
+    private String  tipoCuenta; // AHO: ahorro  , CTE : cuenta corriente , PZF: plazo fijo , VIP :PERSONAL VIP , PYM : PYME
     private Boolean flgComisionMantenimiento;
     private Boolean flgLimiteMovMensual;
     private Integer numMaximoMovimientos;
     private Double  montoMinimoApertura;
     private Integer numeroMaximoTransaccionesLibres;
+
 
 
 }

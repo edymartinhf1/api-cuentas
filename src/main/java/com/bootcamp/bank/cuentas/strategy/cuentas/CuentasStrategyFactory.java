@@ -1,4 +1,4 @@
-package com.bootcamp.bank.cuentas.strategy;
+package com.bootcamp.bank.cuentas.strategy.cuentas;
 
 import com.bootcamp.bank.cuentas.model.enums.CuentasTipoTypes;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,8 @@
-package com.bootcamp.bank.cuentas.strategy;
+package com.bootcamp.bank.cuentas.strategy.cuentas;
 
 import com.bootcamp.bank.cuentas.clients.ClientApiClientes;
 import com.bootcamp.bank.cuentas.clients.ClientApiCreditos;
+import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
 import reactor.core.publisher.Mono;
@@ -11,5 +12,7 @@ public interface CuentasStrategy {
             CuentaRepository cuentaRepository,
             ClientApiClientes clientApiClientes,
             ClientApiCreditos clientApiCreditos,
-            CuentaDao cuentaDao);
+            CuentaDao cuentaDao,
+            PerfilInfo perfilInfo
+    );
 }

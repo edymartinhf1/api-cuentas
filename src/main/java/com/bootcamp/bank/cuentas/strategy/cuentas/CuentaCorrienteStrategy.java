@@ -1,16 +1,21 @@
-package com.bootcamp.bank.cuentas.strategy;
+package com.bootcamp.bank.cuentas.strategy.cuentas;
 
 import com.bootcamp.bank.cuentas.clients.ClientApiClientes;
 import com.bootcamp.bank.cuentas.clients.ClientApiCreditos;
 import com.bootcamp.bank.cuentas.exception.BusinessException;
+import com.bootcamp.bank.cuentas.model.PerfilInfo;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
+import com.bootcamp.bank.cuentas.service.CuentaServiceI;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-
 @Component
-public class CuentaPlazoFijoStrategy implements CuentasStrategy {
+public class CuentaCorrienteStrategy implements CuentasStrategy{
+
+    @Autowired
+    private CuentaServiceI cuentaServiceI;
 
     /**
      * Un cliente personal solo puede tener un máximo de una cuenta de ahorro, una cuenta corriente o cuentas a plazo fijo
@@ -24,8 +29,12 @@ public class CuentaPlazoFijoStrategy implements CuentasStrategy {
     public Mono<Boolean> verifyCuenta(CuentaRepository cuentaRepository,
                                       ClientApiClientes clientApiClientes,
                                       ClientApiCreditos clientApiCreditos,
-                                      CuentaDao cuentaDao) {
-
+                                      CuentaDao cuentaDao,
+                                      PerfilInfo perfilInfo
+    ) {
+        if (!perfilInfo.getPerfiles().contains(cuentaDao.getTipoCuenta().trim())){
+            return Mono.just(Boolean.FALSE);
+        }
         String idCliente  = cuentaDao.getIdCliente();
         String tipoCuenta = cuentaDao.getTipoCuenta();
         return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuenta)
