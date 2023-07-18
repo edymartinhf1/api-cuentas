@@ -9,7 +9,7 @@ public class CuentaEmpresarialPyme extends CuentaA{
     @Override
     void configurarCuenta() {
         int randomNumber = Util.generateRandomNumber(1, 100000);
-        this.setTipoCuenta("PYME");
+        this.setTipoCuenta("PYM");
         this.setFlgComisionMantenimiento(false);
         this.setNumeroCuenta("PYME"+Integer.toString(randomNumber));
         this.setFechaCreacion (Util.getCurrentDateAsString("dd/MM/yyyy"));
