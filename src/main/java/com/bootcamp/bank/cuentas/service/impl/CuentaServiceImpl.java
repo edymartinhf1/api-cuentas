@@ -205,5 +205,14 @@ public class CuentaServiceImpl implements CuentaServiceI{
         return perfilClienteTypes;
     };
 
+    private Mono<Boolean> verificarProductoCreditosConDeuda(CuentaDao cuentaDao){
+        return clientApiCreditos.getCreditosPorIdCliente(cuentaDao.getIdCliente())
+                .collectList()
+                .map(creditoList->{
+                    log.info("producto creditos encontrados "+creditoList.size()+" para el id cliente "+cuentaDao.getIdCliente());
+                    return creditoList.stream().anyMatch(credito-> credito.getFlgDeudaVencida() && credito.getMontoDeudaVencida().doubleValue()>0 ) ? Boolean.TRUE : Boolean.FALSE;
+                });
+    }
+
 
 }

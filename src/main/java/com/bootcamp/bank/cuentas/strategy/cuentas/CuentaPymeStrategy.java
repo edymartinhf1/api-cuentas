@@ -46,7 +46,7 @@ public class CuentaPymeStrategy implements CuentasStrategy{
                         list.isEmpty() ? Mono.just(new BusinessException("CuentaPyme error : El cliente : "+idCliente+" no tiene cuenta  de tipo :"+tipoCuentaPreCondicion)):Mono.just(list)
                 )
                 .flatMap( cue-> {
-                    return clientApiCreditos.getCreditosPorIdClinteAndTipoCredito(idCliente,tipoCreditoPreCondicion)
+                    return clientApiCreditos.getCreditosPorIdClientAndTipoCredito(idCliente,tipoCreditoPreCondicion)
                             .switchIfEmpty(Mono.error(()->new BusinessException("CuentaPyme error : no existe producto credito tarjeta con el cliente id "+idCliente)))
                             .next()
                             .flatMap(cre ->Mono.just(Boolean.TRUE));

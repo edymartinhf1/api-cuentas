@@ -2,6 +2,8 @@ package com.bootcamp.bank.cuentas.model;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class CreditoProducto {
     private String  idCliente;
@@ -13,4 +15,6 @@ public class CreditoProducto {
     private Double  saldo;
     private Double  consumos;
     private Double  pagos;
+    private BigDecimal montoDeudaVencida;
+    private Boolean flgDeudaVencida;
 }
