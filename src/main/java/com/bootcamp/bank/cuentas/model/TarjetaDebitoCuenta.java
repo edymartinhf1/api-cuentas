@@ -2,12 +2,12 @@ package com.bootcamp.bank.cuentas.model;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 @Data
-public class TarjetaDebito {
+public class TarjetaDebitoCuenta {
     private String id;
     private String idCliente;
-    private String fechaCreacionT;
-    private String numeroCuentaPrincipal;
     private String numeroTarjetaDebito;
+    private LocalDateTime fechaCreacion;
     private String numeroCuenta;
 }

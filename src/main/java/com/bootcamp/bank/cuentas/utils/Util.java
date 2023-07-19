@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 @NoArgsConstructor(access= AccessLevel.PRIVATE)
 public class Util {
@@ -19,4 +20,11 @@ public class Util {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
         return currentDate.format(formatter);
     }
+    public static LocalDateTime getCurrentLocalDate() {
+        return LocalDateTime.now();
+    }
+
+
+
+
 }

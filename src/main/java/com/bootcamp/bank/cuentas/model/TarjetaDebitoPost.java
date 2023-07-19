@@ -7,5 +7,6 @@ public class TarjetaDebitoPost {
     private String id;
     private String idCliente;
     private String numeroTarjetaDebito;
+    private String numeroCuentaPrincipal;
     private String numeroCuenta;
 }
