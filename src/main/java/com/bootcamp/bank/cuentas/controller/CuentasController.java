@@ -53,7 +53,7 @@ public class CuentasController {
 
 
     /**
-     * Permite obtener una cuenta bancaria por numero de cuenta
+     * Permite obtener info de una cuenta bancaria por numero de cuenta
      * @param numeroCuenta
      * @return
      */

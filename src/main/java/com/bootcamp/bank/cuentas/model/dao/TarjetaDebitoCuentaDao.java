@@ -14,5 +14,6 @@ public class TarjetaDebitoCuentaDao {
     private String idCliente;
     private String numeroTarjetaDebito;
     private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaAsociacion;
     private String numeroCuenta;
 }

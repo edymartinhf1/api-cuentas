@@ -2,6 +2,7 @@ package com.bootcamp.bank.cuentas.service.impl;
 
 import com.bootcamp.bank.cuentas.clients.ClientApiClientes;
 import com.bootcamp.bank.cuentas.exception.BusinessException;
+import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.TarjetaDebitoCuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.TarjetaDebitoDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
@@ -117,7 +118,7 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
                             .flatMap(cuenta ->{
                                 log.info(" cuenta "+cuenta.toString());
                                 return tarjetaDebitoRepository.findByNumeroTarjetaDebito(tarjetaDebitoDao.getNumeroTarjetaDebito())
-                                        .switchIfEmpty(Mono.error(()->new BusinessException("No existe tarjeta de debito  "+tarjetaDebitoDao.getNumeroCuenta())))
+                                        .switchIfEmpty(Mono.error(()->new BusinessException("No existe tarjeta de debito =  "+tarjetaDebitoDao.getNumeroTarjetaDebito())))
                                         .flatMap( tarjetadebito->{
                                             log.info(" tarjeta debito "+tarjetadebito.toString());
                                             return tarjetaDebitoCuentasRepository.findByNumeroCuentaAndNumeroTarjetaDebito(tarjetaDebitoDao.getNumeroCuenta(),tarjetaDebitoDao.getNumeroTarjetaDebito())
@@ -129,6 +130,7 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
                                                             TarjetaDebitoCuentaDao tarjetaDebitoCuentaDao = new TarjetaDebitoCuentaDao();
                                                             tarjetaDebitoCuentaDao.setIdCliente(tarjetaDebitoDao.getIdCliente());
                                                             tarjetaDebitoCuentaDao.setFechaCreacion(Util.getCurrentLocalDate());
+                                                            tarjetaDebitoCuentaDao.setFechaAsociacion(Util.getCurrentLocalDate());
                                                             tarjetaDebitoCuentaDao.setNumeroTarjetaDebito(tarjetaDebitoDao.getNumeroTarjetaDebito());
                                                             tarjetaDebitoCuentaDao.setNumeroCuenta(tarjetaDebitoDao.getNumeroCuenta());
                                                             return tarjetaDebitoCuentasRepository.save(tarjetaDebitoCuentaDao);
@@ -139,6 +141,9 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
                 });
     }
 
+
+
+
     @Override
     public Flux<TarjetaDebitoDao> getCardDebitPorIdCliente(String idCliente) {
         return tarjetaDebitoRepository.findByIdCliente(idCliente);
@@ -146,7 +151,22 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
 
     @Override
     public Flux<TarjetaDebitoCuentaDao> getNumberAccountsPorCardDebit(String tarjetaDebito) {
-        return tarjetaDebitoCuentasRepository.findByNumeroTarjetaDebito(tarjetaDebito);
+        return tarjetaDebitoCuentasRepository.findByNumeroTarjetaDebito(tarjetaDebito)
+                .sort( (obj1, obj2) -> obj1.getFechaAsociacion().compareTo(obj2.getFechaAsociacion()));
+    }
+
+    @Override
+    public Flux<CuentaDao> findAccountsByCardDebit(String numeroTarjetaDebito) {
+        return tarjetaDebitoCuentasRepository.findByNumeroTarjetaDebito(numeroTarjetaDebito)
+                .flatMap(numeroCuenta->{
+                    log.info("numero cuenta"+numeroCuenta.toString());
+                    return cuentaRepository.findByNumeroCuenta(numeroCuenta.getNumeroCuenta());
+                });
+    }
+
+    @Override
+    public Mono<TarjetaDebitoDao> getCardDebitPorCardDebit(String numeroTarjetaDebito) {
+        return tarjetaDebitoRepository.findByNumeroTarjetaDebito(numeroTarjetaDebito);
     }
 
     UnaryOperator<TarjetaDebitoDao> configurarTarjeta= tarjeta -> {

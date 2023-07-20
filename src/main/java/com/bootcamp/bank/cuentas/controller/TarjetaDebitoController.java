@@ -1,8 +1,10 @@
 package com.bootcamp.bank.cuentas.controller;
 
+import com.bootcamp.bank.cuentas.model.Cuenta;
 import com.bootcamp.bank.cuentas.model.TarjetaDebito;
 import com.bootcamp.bank.cuentas.model.TarjetaDebitoCuenta;
 import com.bootcamp.bank.cuentas.model.TarjetaDebitoPost;
+import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.TarjetaDebitoCuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.TarjetaDebitoDao;
 import com.bootcamp.bank.cuentas.service.TarjetaDebitoServiceI;
@@ -53,15 +55,33 @@ public class TarjetaDebitoController {
                 .map(this::fromTarjetaDebitoDaoToTarjetaDebito);
     }
 
+
+    /**
+     * Permite obtener Cuentas asociadas a una Tarjeta de Debito
+     * @param numeroTarjetaDebito
+     * @return
+     */
+    @GetMapping("/cuentas/{numeroTarjetaDebito}")
+    public Flux<Cuenta> findAccountsByCardDebit(@PathVariable String numeroTarjetaDebito){
+        return tarjetaDebitoServiceI.findAccountsByCardDebit(numeroTarjetaDebito)
+                .map(this::fromCuentaDaoToCuentaDto);
+
+    }
     /**
      * Permite Obtener numeros de cuenta por numero de tarjeta de debito
      * @param numeroTarjetaDebito
      * @return
      */
-    @GetMapping("/cuentas/{numeroTarjetaDebito}")
+    @GetMapping("/cuentas-asociacion/{numeroTarjetaDebito}")
     public Flux<TarjetaDebitoCuenta> getNumberAccountsPorCardDebit(@PathVariable String numeroTarjetaDebito) {
         return tarjetaDebitoServiceI.getNumberAccountsPorCardDebit(numeroTarjetaDebito)
                 .map(this::fromTarjetaDebitoCuentaDaoToTarjetaDebitoCuenta);
+    }
+
+    @GetMapping("/numero/{numeroTarjetaDebito}")
+    public Mono<TarjetaDebito> getCardDebitPorCardDebit(@PathVariable String numeroTarjetaDebito) {
+        return tarjetaDebitoServiceI.getCardDebitPorCardDebit(numeroTarjetaDebito)
+                .map(this::fromTarjetaDebitoDaoToTarjetaDebito);
     }
 
     private TarjetaDebito fromTarjetaDebitoDaoToTarjetaDebito(TarjetaDebitoDao tarjetaDebitoDao) {
@@ -81,6 +101,13 @@ public class TarjetaDebitoController {
         BeanUtils.copyProperties(tarjetaDebitoCuentaDao,tarjetaDebitoCuenta);
         return tarjetaDebitoCuenta;
     }
+
+    private Cuenta fromCuentaDaoToCuentaDto(CuentaDao cuentaDao) {
+        Cuenta cuenta = new Cuenta();
+        BeanUtils.copyProperties(cuentaDao,cuenta);
+        return cuenta;
+    }
+
 
 
 
