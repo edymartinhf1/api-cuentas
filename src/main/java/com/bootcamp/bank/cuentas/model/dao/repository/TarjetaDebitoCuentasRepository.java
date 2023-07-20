@@ -10,5 +10,5 @@ public interface TarjetaDebitoCuentasRepository extends ReactiveMongoRepository<
 
     Flux<TarjetaDebitoCuentaDao> findByNumeroCuentaAndIdCliente(String numeroCuenta, String idCliente);
     Flux<TarjetaDebitoCuentaDao> findByNumeroTarjetaDebito(String numeroTarjetaDebito);
-    Flux<TarjetaDebitoCuentaDao> findByNumeroCuenta(String numeroCuenta);
+    Flux<TarjetaDebitoCuentaDao> findByNumeroCuentaAndNumeroTarjetaDebito(String numeroCuenta,String numeroTarjetaDebito);
 }

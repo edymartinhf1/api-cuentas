@@ -15,7 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- * Tarjeta debito
+ * Clase Controller Tarjeta debito
  */
 @RestController
 @RequestMapping("/tarjeta/debito")
@@ -32,6 +32,7 @@ public class TarjetaDebitoController {
     }
 
     /**
+     * Permite asociar una cuenta bancaria a una tarjeta de debito
      * @param tarjetaDebitoPost
      * @return
      */
@@ -42,6 +43,7 @@ public class TarjetaDebitoController {
     }
 
     /**
+     * Permite obtener Tarjetas de debito por id cliente
      * @param idCliente
      * @return
      */
@@ -52,6 +54,7 @@ public class TarjetaDebitoController {
     }
 
     /**
+     * Permite Obtener numeros de cuenta por numero de tarjeta de debito
      * @param numeroTarjetaDebito
      * @return
      */

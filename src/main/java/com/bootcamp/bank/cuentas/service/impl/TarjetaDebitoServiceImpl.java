@@ -101,6 +101,7 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
      * Verificar id cliente
      * Verificar el numero de cuenta de asociacion
      * Verificar el numero de tarjeta de debito
+     * Verificar
      * Registro de asociacion
      * @param tarjetaDebitoDao
      * @return
@@ -119,7 +120,7 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
                                         .switchIfEmpty(Mono.error(()->new BusinessException("No existe tarjeta de debito  "+tarjetaDebitoDao.getNumeroCuenta())))
                                         .flatMap( tarjetadebito->{
                                             log.info(" tarjeta debito "+tarjetadebito.toString());
-                                            return tarjetaDebitoCuentasRepository.findByNumeroCuenta(tarjetaDebitoDao.getNumeroCuenta())
+                                            return tarjetaDebitoCuentasRepository.findByNumeroCuentaAndNumeroTarjetaDebito(tarjetaDebitoDao.getNumeroCuenta(),tarjetaDebitoDao.getNumeroTarjetaDebito())
                                                     .collectList()
                                                     .flatMap(cuentasLst->{
                                                         if (!cuentasLst.isEmpty()) {
