@@ -1,6 +1,7 @@
 package com.bootcamp.bank.cuentas.clients;
 
 import com.bootcamp.bank.cuentas.model.CreditoProducto;
+import com.bootcamp.bank.cuentas.model.CreditoProductoInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,15 @@ public class ClientApiCreditos {
                 .retrieve()
                 .bodyToFlux(CreditoProducto.class);
     }
+
+    public Flux<CreditoProductoInfo> getCreditosDeudaPorIdCliente(String idCliente) {
+        return webClient.get()
+                .uri("/creditos/deudas/cliente/" + idCliente)
+                .retrieve()
+                .bodyToFlux(CreditoProductoInfo.class);
+    }
+
+
 
 }
 

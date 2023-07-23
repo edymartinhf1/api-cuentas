@@ -39,19 +39,29 @@ public class CuentaPymeStrategy implements CuentasStrategy{
             return Mono.just(Boolean.FALSE);
         }
 
-        return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuentaPreCondicion)
-                .switchIfEmpty(Mono.error(()->new BusinessException(" cuentaPyme error : no existe cuenta corriente con el cliente id "+idCliente)))
+        return clientApiCreditos.getCreditosDeudaPorIdCliente(idCliente)
                 .collectList()
-                .map(list ->
-                        list.isEmpty() ? Mono.just(new BusinessException("CuentaPyme error : El cliente : "+idCliente+" no tiene cuenta  de tipo :"+tipoCuentaPreCondicion)):Mono.just(list)
-                )
-                .flatMap( cue-> {
-                    return clientApiCreditos.getCreditosPorIdClientAndTipoCredito(idCliente,tipoCreditoPreCondicion)
-                            .switchIfEmpty(Mono.error(()->new BusinessException("CuentaPyme error : no existe producto credito tarjeta con el cliente id "+idCliente)))
-                            .next()
-                            .flatMap(cre ->Mono.just(Boolean.TRUE));
-                });
+                .flatMap(listDeudas-> {
+                    if (!listDeudas.isEmpty()) {
+                        log.info(" contiene productos de credito con deuda con deuda");
+                        return Mono.just(Boolean.FALSE);
+                    }
+                    log.info(" list deuda " + listDeudas.toString());
 
+                    return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuentaPreCondicion)
+                            .switchIfEmpty(Mono.error(()->new BusinessException(" cuentaPyme error : no existe cuenta corriente con el cliente id "+idCliente)))
+                            .collectList()
+                            .map(list ->
+                                    list.isEmpty() ? Mono.just(new BusinessException("CuentaPyme error : El cliente : "+idCliente+" no tiene cuenta  de tipo :"+tipoCuentaPreCondicion)):Mono.just(list)
+                            )
+                            .flatMap( cue-> {
+                                return clientApiCreditos.getCreditosPorIdClientAndTipoCredito(idCliente,tipoCreditoPreCondicion)
+                                        .switchIfEmpty(Mono.error(()->new BusinessException("CuentaPyme error : no existe producto credito tarjeta con el cliente id "+idCliente)))
+                                        .next()
+                                        .flatMap(cre ->Mono.just(Boolean.TRUE));
+                            });
+
+                });
 
     }
 }

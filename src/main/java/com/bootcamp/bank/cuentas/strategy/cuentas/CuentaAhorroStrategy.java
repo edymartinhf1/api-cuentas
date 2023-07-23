@@ -38,13 +38,28 @@ public class CuentaAhorroStrategy implements CuentasStrategy{
             return Mono.just(Boolean.FALSE);
         }
 
-        return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuenta)
+        return clientApiCreditos.getCreditosDeudaPorIdCliente(idCliente)
                 .collectList()
-                .flatMap(list -> {
-                    log.info(" cuentas de tipo "+tipoCuenta +" obtenidos ="+list.size());
-                    log.info(" el cliente : " + idCliente + " ya tiene cuentas de tipo :" + tipoCuenta +" registros "+list.size());
-                    return !list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                .flatMap(listDeudas->{
+                    if (!listDeudas.isEmpty()){
+                        log.info(" contiene productos de credito con deuda con deuda");
+                        return Mono.just(Boolean.FALSE);
+                    }
+                    log.info(" list deuda "+listDeudas.toString());
+                    return cuentaRepository.findByIdClienteAndTipoCuenta(idCliente,tipoCuenta)
+                            .collectList()
+                            .flatMap(list -> {
+                                log.info(" cuentas de tipo "+tipoCuenta +" obtenidos ="+list.size());
+                                log.info(" el cliente : " + idCliente + " ya tiene cuentas de tipo :" + tipoCuenta +" registros "+list.size());
+                                return !list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                            });
                 });
+
+
+
+
+
+
 
 
 

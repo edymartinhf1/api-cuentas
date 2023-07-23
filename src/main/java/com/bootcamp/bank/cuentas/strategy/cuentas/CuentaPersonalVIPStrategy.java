@@ -37,13 +37,26 @@ public class CuentaPersonalVIPStrategy implements CuentasStrategy{
             log.info("No es un tipo de cuenta permitido "+cuentaDao.getTipoCuenta()+" para el tipo de cliente "+cuentaDao.getIdCliente());
             return Mono.just(Boolean.FALSE);
         }
-        return clientApiCreditos.getCreditosPorIdClientAndTipoCredito(idCliente,tipoCreditoPreCondicion)
-                .switchIfEmpty(Mono.error(()->new BusinessException(" cuentaVip error : no existe un producto de tarjeta de credito con el cliente id "+idCliente)))
+        return clientApiCreditos.getCreditosDeudaPorIdCliente(idCliente)
                 .collectList()
-                .flatMap(list -> {
-                    log.info(" cuenta personal vip - numero de productos de tarjeta de credito "+list.size());
-                    return list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                .flatMap(listDeudas-> {
+                    if (!listDeudas.isEmpty()) {
+                        log.info(" contiene productos de credito con deuda con deuda");
+                        return Mono.just(Boolean.FALSE);
+                    }
+
+                    return clientApiCreditos.getCreditosPorIdClientAndTipoCredito(idCliente,tipoCreditoPreCondicion)
+                            .switchIfEmpty(Mono.error(()->new BusinessException(" cuentaVip error : no existe un producto de tarjeta de credito con el cliente id "+idCliente)))
+                            .collectList()
+                            .flatMap(list -> {
+                                log.info(" cuenta personal vip - numero de productos de tarjeta de credito "+list.size());
+                                return list.isEmpty() ? Mono.just(Boolean.FALSE) : Mono.just(Boolean.TRUE);
+                            });
+
+
                 });
+
+
 
 
 
