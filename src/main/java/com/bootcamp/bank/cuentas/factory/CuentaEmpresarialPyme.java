@@ -12,7 +12,8 @@ public class CuentaEmpresarialPyme extends CuentaA{
         this.setTipoCuenta("PYM");
         this.setFlgComisionMantenimiento(false);
         this.setNumeroCuenta("PYME"+Integer.toString(randomNumber));
-        this.setFechaCreacion (Util.getCurrentDateAsString("dd/MM/yyyy"));
+        this.setFechaCreacion(Util.getCurrentLocalDate());
+        this.setFechaCreacionT(Util.getCurrentDateAsString("dd/MM/yyyy"));
         this.setEstado("ACT");
         this.setNumeroMaximoTransaccionesLibres(20);
     }

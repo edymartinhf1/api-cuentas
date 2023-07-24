@@ -13,7 +13,8 @@ public class CuentaCorriente extends CuentaA{
         this.setFlgComisionMantenimiento(true);
         this.setFlgLimiteMovMensual(false);
         this.setNumeroCuenta("CTE"+Integer.toString(randomNumber));
-        this.setFechaCreacion (Util.getCurrentDateAsString("dd/MM/yyyy"));
+        this.setFechaCreacion(Util.getCurrentLocalDate());
+        this.setFechaCreacionT(Util.getCurrentDateAsString("yyyy-MM-dd"));
         this.setNumMaximoMovimientos(999999); // ilimitado
         this.setMontoMinimoApertura(0.00);
         this.setEstado("ACT");

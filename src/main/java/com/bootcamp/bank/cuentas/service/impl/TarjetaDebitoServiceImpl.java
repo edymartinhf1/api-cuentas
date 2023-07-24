@@ -52,7 +52,7 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
                 .switchIfEmpty(Mono.error(()->new BusinessException("No existe cliente con el id "+tarjetaDebitoDao.getIdCliente())))
                 .flatMap(cliente-> {
                     log.info(" cliente ="+cliente.toString());
-                    return this.validateNumerosCuentasBancarias(tarjetaDebitoDao)
+                    return this.validateNumerosCuentasBancarias(tarjetaDebitoDao) // validacion de cuenta principal
                         .flatMap(cuentasvalidas ->{
                             if (cuentasvalidas){
                                 return this.verifyNumeroCuentaandIdClienteCardDebit(tarjetaDebitoDao);
@@ -73,6 +73,7 @@ public class TarjetaDebitoServiceImpl implements TarjetaDebitoServiceI {
                                     TarjetaDebitoCuentaDao tarjetaDebitoCuentaDao=new TarjetaDebitoCuentaDao();
                                     tarjetaDebitoCuentaDao.setIdCliente(tarjetaDebitoDaoFinal.getIdCliente());
                                     tarjetaDebitoCuentaDao.setFechaCreacion(Util.getCurrentLocalDate());
+                                    tarjetaDebitoCuentaDao.setOrden(1);
                                     tarjetaDebitoCuentaDao.setNumeroTarjetaDebito(tarjetaDebitoDaoFinal.getNumeroTarjetaDebito());
                                     tarjetaDebitoCuentaDao.setNumeroCuenta(tarjetaDebitoDaoFinal.getNumeroCuenta());
 

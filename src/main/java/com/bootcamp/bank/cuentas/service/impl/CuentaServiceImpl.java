@@ -16,7 +16,7 @@ import com.bootcamp.bank.cuentas.strategy.cliente.PerfilClienteStrategyFactory;
 import com.bootcamp.bank.cuentas.strategy.cuentas.CuentasStrategy;
 import com.bootcamp.bank.cuentas.strategy.cuentas.CuentasStrategyFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ import java.util.function.Function;
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 public class CuentaServiceImpl implements CuentaServiceI{
 
     private final CuentaRepository cuentaRepository;
@@ -60,15 +60,9 @@ public class CuentaServiceImpl implements CuentaServiceI{
     @Value("${tipo.cuenta.plazo.fijo}")
     private String tipoCuentaPlazoFijo;
 
-
-
     /**
      * Permite registrar una cuenta
      *
-     * -Un cliente personal (PER) solo puede tener un máximo de una cuenta de ahorro, una cuenta corriente o cuentas a plazo fijo.
-     *  si existe una cuenta previa no procedera a realizar la grabacion para tipo de cuenta PER
-     *
-     * -Un cliente empresarial (EMP) no puede tener una cuenta de ahorro o de plazo fijo, pero sí múltiples cuentas corrientes.
      *
      * @param cuentaDao
      * @return
@@ -94,7 +88,7 @@ public class CuentaServiceImpl implements CuentaServiceI{
                     cuentaA.setIdCliente(cuentaDao.getIdCliente());
                     BeanUtils.copyProperties(cuentaA,cuentaDao);
 
-                    // Segun el tipo  de cuenta se aplican reglas de negocio
+                    // Segun el tipo  de cuenta se aplican estrategia reglas de negocio
                     CuentasTipoTypes cuentasType= setTipoCuenta.apply(cuentaDao.getTipoCuenta());
                     CuentasStrategy strategy= cuentasStrategyFactory.getStrategy(cuentasType);
                     return strategy.verifyCuenta(cuentaRepository,clientApiClientes,clientApiCreditos,cuentaDao,perfilInfo)

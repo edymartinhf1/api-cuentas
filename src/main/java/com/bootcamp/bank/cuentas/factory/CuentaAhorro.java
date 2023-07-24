@@ -14,7 +14,8 @@ public class CuentaAhorro  extends CuentaA{
         this.setFlgLimiteMovMensual(true);
         this.setNumMaximoMovimientos(20); // numero maximo limitado
         this.setNumeroCuenta("AHO".concat(Integer.toString(randomNumber)));
-        this.setFechaCreacion (Util.getCurrentDateAsString("dd/MM/yyyy"));
+        this.setFechaCreacion(Util.getCurrentLocalDate());
+        this.setFechaCreacionT(Util.getCurrentDateAsString("yyyy-MM-dd"));
         this.setEstado("ACT");
         this.setMontoMinimoApertura(0.00);
         this.setNumeroMaximoTransaccionesLibres(20);

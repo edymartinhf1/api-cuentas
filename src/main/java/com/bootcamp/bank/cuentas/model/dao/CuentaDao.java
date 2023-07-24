@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Data
 @Document("cuentas")
 public class CuentaDao {
@@ -11,7 +13,8 @@ public class CuentaDao {
     private String  id;
     private String  idCliente;
     private String  numeroCuenta;
-    private String  fechaCreacion;
+    private LocalDateTime fechaCreacion;
+    private String fechaCreacionT;
     private String  estado;
     private String  tipoCuenta; // AHO: ahorro  , CTE : cuenta corriente , PZF: plazo fijo , VIP :PERSONAL VIP , PYM : PYME
     private Boolean flgComisionMantenimiento;
