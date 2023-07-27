@@ -7,6 +7,8 @@ import com.bootcamp.bank.cuentas.service.CuentaServiceI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -21,6 +23,8 @@ import reactor.core.publisher.Mono;
 public class CuentasController {
 
     private final CuentaServiceI cuentasService;
+
+    private final ReactiveCircuitBreakerFactory cbFactory;
 
     /**
      * Permite crear una cuenta bancaria
@@ -51,7 +55,9 @@ public class CuentasController {
     @GetMapping("/{id}")
     public Mono<Cuenta> findById(@PathVariable String id){
 
-        return cuentasService.findById(id).map(this::fromCuentaDaoToCuentaDto);
+        ReactiveCircuitBreaker rcb=cbFactory.create("findByIdCB");
+        return rcb.run(cuentasService.findById(id)
+                .map(this::fromCuentaDaoToCuentaDto), fallback -> Mono.just(new Cuenta()));
     }
 
 
@@ -74,9 +80,11 @@ public class CuentasController {
      */
     @GetMapping("/cliente/{idCliente}")
     public Flux<Cuenta> findByIdCliente(@PathVariable String idCliente){
-
-        return cuentasService.findByIdCliente(idCliente).map(this::fromCuentaDaoToCuentaDto);
+        ReactiveCircuitBreaker rcb=cbFactory.create("findByIdCliCB");
+        return rcb.run(cuentasService.findByIdCliente(idCliente)
+                .map(this::fromCuentaDaoToCuentaDto), fallback -> Flux.just(new Cuenta()));
     }
+
 
     /**
      * Permite actualizar cuenta
