@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -45,6 +47,10 @@ public class CuentaServiceImpl implements CuentaServiceI{
 
     private final PerfilClienteStrategyFactory perfilClienteStrategyFactory;
 
+    private final ReactiveValueOperations<String, CuentaDao> reactiveRedisOperations;
+
+    private final ReactiveRedisTemplate<String, CuentaDao> reactiveRedisTemplate;
+
     @Value("${tipo.cliente.personal}")
     private String tipoClientePersonal;
 
@@ -59,6 +65,7 @@ public class CuentaServiceImpl implements CuentaServiceI{
 
     @Value("${tipo.cuenta.plazo.fijo}")
     private String tipoCuentaPlazoFijo;
+
 
     /**
      * Permite registrar una cuenta
@@ -95,7 +102,12 @@ public class CuentaServiceImpl implements CuentaServiceI{
                             .flatMap(valido ->{
                                 if (valido){
                                     return cuentaRepository
-                                            .save(cuentaDao);
+                                            .save(cuentaDao).map(cuenta->{
+                                                log.info(" redis request "+cuenta.toString());
+                                                reactiveRedisTemplate.opsForValue().set(cuenta.getId(), cuenta).subscribe();
+
+                                                return cuenta;
+                                            });
                                 } else {
                                     return Mono.error(new BusinessException("No se pudo registrar cuenta , no cumple con las pre-condiciones"));
                                 }
@@ -122,7 +134,9 @@ public class CuentaServiceImpl implements CuentaServiceI{
      * @return
      */
     public Mono<CuentaDao> findById(String id){
-        return cuentaRepository.findById(id);
+
+        //return cuentaRepository.findById(id);
+        return reactiveRedisOperations.get(id);
     }
 
     @Override
