@@ -1,8 +1,9 @@
 package com.bootcamp.bank.cuentas.service;
 
 import com.bootcamp.bank.cuentas.model.MonederoMovilPost;
-import com.bootcamp.bank.cuentas.model.Response;
+import com.bootcamp.bank.cuentas.model.ResponseMonedero;
+import reactor.core.publisher.Mono;
 
 public interface MonederoMovilService {
-    Response registrarMonedero(MonederoMovilPost monederoMovilPost);
+    Mono<ResponseMonedero> registrarMonedero(MonederoMovilPost monederoMovilPost);
 }

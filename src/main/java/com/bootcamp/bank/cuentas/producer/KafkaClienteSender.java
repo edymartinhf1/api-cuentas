@@ -1,6 +1,6 @@
 package com.bootcamp.bank.cuentas.producer;
 
-import com.bootcamp.bank.cuentas.model.MonederoMovilPost;
+import com.bootcamp.bank.cuentas.model.ClientePost;
 import com.bootcamp.bank.cuentas.model.ResponseMonedero;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,27 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-/**
- * Clase Sender Monedero Movil via kafka
- */
 @Component
 @Log4j2
 @RequiredArgsConstructor
-public class KafkaMessageSender {
+public class KafkaClienteSender {
     @Autowired
     private KafkaTemplate<String,String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Permite enviar informacion de monedero a kafka
-     * @param monederoMovilPost
-     */
-    public ResponseMonedero sendMonedero(MonederoMovilPost monederoMovilPost) {
-        log.info("send message"+monederoMovilPost.toString());
+    public ResponseMonedero sendMonedero(ClientePost clientePost) {
+        log.info("send message"+clientePost.toString());
         ResponseMonedero responseMonedero =new ResponseMonedero();
         try {
-            String monederoAsMessage = objectMapper.writeValueAsString(monederoMovilPost);
-            kafkaTemplate.send("monederomovil", monederoAsMessage);
+            String clientePostAsMessage = objectMapper.writeValueAsString(clientePost);
+            kafkaTemplate.send("clienteTopic = ", clientePostAsMessage);
             responseMonedero.setCodigo("01");
             responseMonedero.setMensaje("mensaje enviado correctamente a kafka");
         }catch(JsonProcessingException ex){
@@ -40,6 +33,4 @@ public class KafkaMessageSender {
         return responseMonedero;
 
     }
-
-
 }

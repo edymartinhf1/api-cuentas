@@ -13,7 +13,12 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic bootcampTopic() {
+
         return TopicBuilder.name("monederomovil").build();
+    }
+
+    public NewTopic bootcampTopicP2P() {
+        return TopicBuilder.name("monederoP2PMovilTopic").build();
     }
 
 }

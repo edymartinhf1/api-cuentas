@@ -103,6 +103,7 @@ public class CuentaServiceImpl implements CuentaServiceI{
                                 if (valido){
                                     return cuentaRepository
                                             .save(cuentaDao).map(cuenta->{
+                                                // REGISTRO DE CUENTA EN CACHE REDIS
                                                 log.info(" redis request "+cuenta.toString());
                                                 reactiveRedisTemplate.opsForValue().set(cuenta.getId(), cuenta).subscribe();
 

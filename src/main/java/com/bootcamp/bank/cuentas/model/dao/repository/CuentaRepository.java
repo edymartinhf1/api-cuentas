@@ -16,7 +16,7 @@ public interface CuentaRepository extends ReactiveMongoRepository<CuentaDao,Stri
     Flux<CuentaDao> findByTipoCuenta(String tipoCuenta);
 
     Flux<CuentaDao> findByIdClienteAndTipoCuenta(String idCliente,String tipoCuenta);
-
+    @Query("{'numeroCuenta':?0}")
     Mono<CuentaDao> findByNumeroCuenta(String numeroCuenta);
 
 }
