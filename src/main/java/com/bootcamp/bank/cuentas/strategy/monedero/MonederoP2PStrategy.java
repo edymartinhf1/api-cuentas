@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
+
+/**
+ * Clase Monedero P2P BootCoin
+ */
 @Component
 public class MonederoP2PStrategy  implements MonederoStrategy{
     @Override
