@@ -110,7 +110,7 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
                                     .flatMap(cuenta->{
                                         // ENVIO DE MENSAJE A KAFKA -GENERACION DE MONEDERO
                                         UUID idRequest =UUID.randomUUID();
-                                        monederoMovilPost.setIdCLiente(clienteNuevo.getId());
+                                        monederoMovilPost.setIdCliente(clienteNuevo.getId());
                                         monederoMovilPost.setNumeroCuentaPrincipal(cuenta.getNumeroCuenta());
                                         monederoMovilPost.setIdRequest(idRequest.toString());
                                         kafkaProducer.sendMonedero(monederoMovilPost);

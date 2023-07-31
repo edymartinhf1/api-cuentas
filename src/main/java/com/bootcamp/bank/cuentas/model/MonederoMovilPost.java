@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class MonederoMovilPost {
     private String idRequest;
-    private String idCLiente; //Debe ser cliente del banco
+    private String idCliente; //Debe ser cliente del banco
     private String nombre;
     private String numeroCuentaPrincipal;
     private String numeroDocumento;
