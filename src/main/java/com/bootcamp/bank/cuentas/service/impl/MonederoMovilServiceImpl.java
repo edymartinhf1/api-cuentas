@@ -9,6 +9,7 @@ import com.bootcamp.bank.cuentas.model.*;
 import com.bootcamp.bank.cuentas.model.dao.CuentaDao;
 import com.bootcamp.bank.cuentas.model.dao.repository.CuentaRepository;
 import com.bootcamp.bank.cuentas.model.enums.CuentasTipoTypes;
+import com.bootcamp.bank.cuentas.model.enums.MonederoTypes;
 import com.bootcamp.bank.cuentas.model.enums.PerfilClienteTypes;
 import com.bootcamp.bank.cuentas.producer.KafkaMessageSender;
 import com.bootcamp.bank.cuentas.service.MonederoMovilService;
@@ -16,6 +17,8 @@ import com.bootcamp.bank.cuentas.strategy.cliente.PerfilClienteStrategy;
 import com.bootcamp.bank.cuentas.strategy.cliente.PerfilClienteStrategyFactory;
 import com.bootcamp.bank.cuentas.strategy.cuentas.CuentasStrategy;
 import com.bootcamp.bank.cuentas.strategy.cuentas.CuentasStrategyFactory;
+import com.bootcamp.bank.cuentas.strategy.monedero.MonederoStrategy;
+import com.bootcamp.bank.cuentas.strategy.monedero.MonederoStrategyFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -23,7 +26,6 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -33,6 +35,9 @@ import java.util.function.Function;
 @Log4j2
 @RequiredArgsConstructor
 public class MonederoMovilServiceImpl implements MonederoMovilService {
+
+    public static final String TIPO_CLIENTE_PERSONAL = "PER";
+    public static final String TIPO_CUENTA_AHORRO = "AHO";
 
     private final CuentaRepository cuentaRepository;
 
@@ -50,6 +55,8 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
 
     private final PerfilClienteStrategyFactory perfilClienteStrategyFactory;
 
+    private final MonederoStrategyFactory monederoStrategyFactory;
+
     /**
      * Permite registrar Monedero movil
      * No se necesita ser cliente -> debe de generarse como cliente
@@ -65,7 +72,7 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
     public Mono<ResponseMonedero> registrarMonedero(MonederoMovilPost monederoMovilPost) {
 
         ClientePost cliente=new ClientePost();
-        cliente.setTipoCli("PER");
+        cliente.setTipoCli(TIPO_CLIENTE_PERSONAL);
         cliente.setNumeroDocumento(monederoMovilPost.getNumeroDocumento());
         cliente.setTipoDocumento(monederoMovilPost.getTipoDocumento());
         cliente.setNumeroCelular(monederoMovilPost.getNumeroCelular());
@@ -76,7 +83,7 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
         return clientApiClientes.saveCliente(cliente).flatMap(clienteNuevo->{
             log.info("nuevo cliente generado = "+clienteNuevo.toString());
             CuentaDao cuentaDao=new CuentaDao();
-            cuentaDao.setTipoCuenta("AHO");
+            cuentaDao.setTipoCuenta(TIPO_CUENTA_AHORRO);
             cuentaDao.setIdCliente(clienteNuevo.getId());
 
             Cliente cli=new Cliente();
@@ -108,20 +115,12 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
                                         return cuenta;
                                     })
                                     .flatMap(cuenta->{
-                                        // ENVIO DE MENSAJE A KAFKA -GENERACION DE MONEDERO
-                                        UUID idRequest =UUID.randomUUID();
-                                        monederoMovilPost.setIdCliente(clienteNuevo.getId());
-                                        monederoMovilPost.setNumeroCuentaPrincipal(cuenta.getNumeroCuenta());
-                                        monederoMovilPost.setIdRequest(idRequest.toString());
-                                        kafkaProducer.sendMonedero(monederoMovilPost);
 
-                                        ResponseMonedero responseMonedero =new ResponseMonedero();
-                                        responseMonedero.setCodigo("01");
-                                        responseMonedero.setMensaje("cliente y cuentas generadas , procesando monedero");
-                                        responseMonedero.setIdCliente(clienteNuevo.getId());
-                                        responseMonedero.setNumeroCuenta(cuenta.getNumeroCuenta());
-                                        responseMonedero.setIdRequest(idRequest.toString());
-                                        return Mono.just(responseMonedero);
+                                        MonederoTypes moned= setTipoMonedero.apply(monederoMovilPost.getTipoMonedero());
+                                        MonederoStrategy monederoStrategy= monederoStrategyFactory.getStrategy(moned);
+
+                                        return monederoStrategy.registrarMonedero (kafkaProducer, clienteNuevo , cuenta, monederoMovilPost );
+
                                     });
 
                         } else {
@@ -167,5 +166,19 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
 
         }
         return perfilClienteTypes;
+    };
+
+
+    Function<String, MonederoTypes> setTipoMonedero = tipoMonedero  -> {
+        MonederoTypes monederoTypes= null;
+        switch (tipoMonedero) {
+            case "NOR" -> monederoTypes= MonederoTypes.MOVIL;
+
+            case "P2P" -> monederoTypes= MonederoTypes.MOVIL_P2P;
+
+            default -> monederoTypes =MonederoTypes.INVALIDO;
+
+        }
+        return monederoTypes;
     };
 }

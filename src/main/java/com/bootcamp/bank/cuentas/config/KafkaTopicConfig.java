@@ -18,7 +18,7 @@ public class KafkaTopicConfig {
     }
 
     public NewTopic bootcampTopicP2P() {
-        return TopicBuilder.name("monederoP2PMovilTopic").build();
+        return TopicBuilder.name("monederoP2PMovil").build();
     }
 
 }

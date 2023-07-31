@@ -12,5 +12,6 @@ public class MonederoMovilPost {
     private String tipoDocumento; // DNI , CEX , PAS =PASAPORTE
     private String numeroCelular;
     private String imeiCelular;
+    private String tipoMonedero;  // NOR = Normal  .P2P  = P2P,
     private String correo;
 }

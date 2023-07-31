@@ -32,7 +32,24 @@ public class KafkaMessageSender {
             String monederoAsMessage = objectMapper.writeValueAsString(monederoMovilPost);
             kafkaTemplate.send("monederomovil", monederoAsMessage);
             responseMonedero.setCodigo("01");
-            responseMonedero.setMensaje("mensaje enviado correctamente a kafka");
+            responseMonedero.setMensaje("mensaje enviado correctamente a kafka monederomovil");
+        }catch(JsonProcessingException ex){
+            responseMonedero.setMensaje("Ocurrrio un error en el envio de mensaje a kafka");
+            log.error("error "+ex.getMessage());
+        }
+        return responseMonedero;
+
+    }
+
+
+    public ResponseMonedero sendMonederoP2P(MonederoMovilPost MonederoMovilPost) {
+        log.info("send message"+MonederoMovilPost.toString());
+        ResponseMonedero responseMonedero =new ResponseMonedero();
+        try {
+            String monederoAsMessage = objectMapper.writeValueAsString(MonederoMovilPost);
+            kafkaTemplate.send("monederoP2PMovil", monederoAsMessage);
+            responseMonedero.setCodigo("01");
+            responseMonedero.setMensaje("mensaje enviado correctamente a kafka monederoP2PMovil");
         }catch(JsonProcessingException ex){
             responseMonedero.setMensaje("Ocurrrio un error en el envio de mensaje a kafka");
             log.error("error "+ex.getMessage());
