@@ -23,7 +23,8 @@ public class MonederoMovilController {
     private final MonederoMovilService monederoMovilService;
 
     /**
-     * Permite generar un monedero movil virtual
+     * Permite generar un monedero movil virtual - semana 4
+     * Permite generar un monedero p2p  - proyecto final
      * @param monederoMovilPost
      * @return
      */

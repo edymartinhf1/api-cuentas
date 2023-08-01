@@ -59,6 +59,7 @@ public class MonederoMovilServiceImpl implements MonederoMovilService {
 
     /**
      * Permite registrar Monedero movil
+     * Permite registrar Monedero p2p
      * No se necesita ser cliente -> debe de generarse como cliente
      * Debe de vincularse a una cuenta -> debe de generarse una cuenta
      * -Se genera en backend cliente nuevo
