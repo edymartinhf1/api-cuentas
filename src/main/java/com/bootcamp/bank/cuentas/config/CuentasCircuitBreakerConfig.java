@@ -58,4 +58,14 @@ public class CuentasCircuitBreakerConfig {
         };
     }
 
+    @Bean
+    public Customizer<ReactiveResilience4JCircuitBreakerFactory> findAllBCusomtize(){
+        return factory->{
+            factory.configure(builder->builder
+                            .timeLimiterConfig(TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(7)).build())
+                            .circuitBreakerConfig(io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.ofDefaults())
+                    ,"getAllCB");
+        };
+    }
+
 }

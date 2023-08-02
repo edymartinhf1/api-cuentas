@@ -43,8 +43,9 @@ public class CuentasController {
      */
     @GetMapping
     public Flux<Cuenta> getAll(){
-
-        return cuentasService.findAll().map(this::fromCuentaDaoToCuentaDto);
+        ReactiveCircuitBreaker rcb=cbFactory.create("getAllCB");
+        return rcb.run(cuentasService.findAll()
+                .map(this::fromCuentaDaoToCuentaDto), fallback -> Flux.empty());
     }
 
     /**
