@@ -42,11 +42,11 @@ public class KafkaMessageSender {
     }
 
 
-    public ResponseMonedero sendMonederoP2P(MonederoMovilPost MonederoMovilPost) {
-        log.info("send message"+MonederoMovilPost.toString());
+    public ResponseMonedero sendMonederoP2P(MonederoMovilPost monederoMovilPost) {
+        log.info("send message"+monederoMovilPost.toString());
         ResponseMonedero responseMonedero =new ResponseMonedero();
         try {
-            String monederoAsMessage = objectMapper.writeValueAsString(MonederoMovilPost);
+            String monederoAsMessage = objectMapper.writeValueAsString(monederoMovilPost);
             kafkaTemplate.send("monederoP2PMovil", monederoAsMessage);
             responseMonedero.setCodigo("01");
             responseMonedero.setMensaje("mensaje enviado correctamente a kafka monederoP2PMovil");
