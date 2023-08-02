@@ -13,7 +13,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +50,7 @@ class CuentaServiceImplTest {
         CuentaDao actualiza=new CuentaDao();
         actualiza.setTipoCuenta("PER");
         actualiza.setNumeroCuenta("456-789-456");
-        String numeroCuenta="456-789-456";
+
         Mono<CuentaDao> actual0 = cuentaRepository.save(actualiza);
         CuentaDao actual=actual0.block();
         log.info("step 2"+actual.toString());
@@ -58,6 +62,42 @@ class CuentaServiceImplTest {
 
     @Test
     void findAll() {
+        CuentaDao cuentaDao1=new CuentaDao();
+        cuentaDao1.setId("1");
+        cuentaDao1.setFechaCreacionT("2023-01-01");
+        cuentaDao1.setIdCliente("02");
+        cuentaDao1.setNumeroCuenta("456-789-456");
+
+        CuentaDao cuentaDao2=new CuentaDao();
+        cuentaDao2.setId("2");
+        cuentaDao2.setFechaCreacionT("2023-01-02");
+        cuentaDao2.setIdCliente("02");
+        cuentaDao2.setNumeroCuenta("456-789-457");
+
+        List<CuentaDao> expected=new ArrayList<>();
+        expected.add(cuentaDao1);
+        expected.add(cuentaDao2);
+        log.info("test");
+        Mockito.when( cuentaRepository.save(Mockito.any(CuentaDao.class)) )
+                .thenReturn( Mono.just(cuentaDao1) );
+
+        Mono<CuentaDao> result1=cuentaRepository.save(cuentaDao1);
+
+        Mockito.when( cuentaRepository.save(Mockito.any(CuentaDao.class)) )
+                .thenReturn( Mono.just(cuentaDao2) );
+
+        Mono<CuentaDao> result2=cuentaRepository.save(cuentaDao2);
+        result1.subscribe(operacionCtaDao -> log.info(operacionCtaDao.toString()));
+        result2.subscribe(operacionCtaDao -> log.info(operacionCtaDao.toString()));
+
+        Mockito.when( cuentaRepository.findAll())
+                .thenReturn( Flux.fromIterable(expected));
+
+        Flux<CuentaDao> obtenidos = cuentaRepository.findAll();
+        List<CuentaDao> actual = obtenidos.map(operacionCtaDao -> operacionCtaDao).collectList().block();
+
+        Assertions.assertEquals(expected.get(0).getId(), actual.get(0).getId());
+        Assertions.assertEquals(expected.get(1).getId(), actual.get(1).getId());
     }
 
     @Test
@@ -125,9 +165,9 @@ class CuentaServiceImplTest {
     }
 
 
-    /*
+
     @Test
     void delete() {
     }
-    */
+
 }
